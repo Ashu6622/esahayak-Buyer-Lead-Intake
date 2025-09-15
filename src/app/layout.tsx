@@ -7,7 +7,10 @@ import { PageHeader } from '@/components/layouts/page-header';
 
 export const metadata: Metadata = {
   title: 'LeadTrak',
-  description: 'AI-Powered Lead Tracking for Real Estate',
+  description: 'Lead Tracking for Real Estate',
+  icons: {
+    icon: '/esahayak.jpeg',
+  },
 };
 
 export default function RootLayout({
