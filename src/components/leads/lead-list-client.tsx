@@ -279,7 +279,7 @@ export function LeadListClient({ initialData }: { initialData: InitialData }) {
             key="search-input"
             type="search"
             placeholder="Search by name, email..."
-            className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[320px] border-2 border-red-500"
+            className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[320px]"
             autoComplete="off"
             defaultValue=""
             value={searchQuery}
