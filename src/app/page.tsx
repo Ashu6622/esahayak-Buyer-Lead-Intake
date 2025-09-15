@@ -11,7 +11,10 @@ async function getLeads(searchParams?: { [key: string]: string | string[] | unde
   const where: any = {};
   const query = searchParams?.query as string;
   if (query) {
-    where.name = { contains: query, mode: 'insensitive' };
+    where.OR = [
+      { name: { contains: query, mode: 'insensitive' } },
+      { email: { contains: query, mode: 'insensitive' } },
+    ];
   }
 
   const city = searchParams?.city as string;

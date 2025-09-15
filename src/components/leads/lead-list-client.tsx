@@ -56,11 +56,11 @@ import {
 import { Lead as LeadType, leadStatuses, propertyTypes, leadTimelines, LeadSchema, timelineLabels, propertyTypeLabels } from '@/lib/definitions';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useDebouncedCallback } from 'use-debounce';
-import Link from 'next/link';
+// import Link from 'next/link';
 import { StatusBadge } from './status-badge';
 import { useToast } from '@/hooks/use-toast';
 import { revalidateAndRedirect } from '@/lib/actions';
-import { z } from 'zod';
+// import { z } from 'zod';
 
 type InitialData = {
     leads: LeadType[];
@@ -70,6 +70,7 @@ type InitialData = {
 }
 
 export function LeadListClient({ initialData }: { initialData: InitialData }) {
+  // console.log(initialData)
   const [data, setData] = React.useState(initialData);
   const [isDeleting, setIsDeleting] = React.useState(false);
   const [isNavigating, setIsNavigating] = React.useState(false);
@@ -85,11 +86,7 @@ export function LeadListClient({ initialData }: { initialData: InitialData }) {
     setData(initialData);
   }, [initialData]);
 
-  React.useEffect(() => {
-    // Initialize search query from URL params
-    const currentQuery = searchParams.get('query') || '';
-    setSearchQuery(currentQuery);
-  }, [searchParams]);
+
 
   React.useEffect(() => {
     // Reset navigation loading state when pathname changes
@@ -98,6 +95,7 @@ export function LeadListClient({ initialData }: { initialData: InitialData }) {
   
   const handleSearch = useDebouncedCallback((term: string) => {
     const params = new URLSearchParams(searchParams);
+    // console.log(params);
     params.set('page', '1');
     if (term) {
       params.set('query', term);
@@ -105,6 +103,7 @@ export function LeadListClient({ initialData }: { initialData: InitialData }) {
       params.delete('query');
     }
     router.replace(`${pathname}?${params.toString()}`);
+    
   }, 300);
 
   const handleFilterChange = (key: string, value: string) => {
@@ -277,13 +276,16 @@ export function LeadListClient({ initialData }: { initialData: InitialData }) {
         <div className="relative flex-1 md:grow-0">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
+            key="search-input"
             type="search"
-            placeholder="Search by name..."
-            className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[320px]"
+            placeholder="Search by name, email..."
+            className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[320px] border-2 border-red-500"
+            autoComplete="off"
+            defaultValue=""
             value={searchQuery}
             onChange={(e) => {
-              setSearchQuery(e.target.value);
-              handleSearch(e.target.value);
+              setSearchQuery(e.target.value)
+              handleSearch(e.target.value)
             }}
           />
         </div>
