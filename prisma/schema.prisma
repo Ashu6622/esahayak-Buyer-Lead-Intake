@@ -1,0 +1,47 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Lead {
+  id           String       @id @default(cuid())
+  name         String
+  email        String       @unique
+  phone        String?
+  city         String
+  propertyType PropertyType
+  status       LeadStatus
+  timeline     LeadTimeline
+  notes        String?
+  tags         String[]
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+}
+
+enum PropertyType {
+  SingleFamily
+  Condo
+  Townhouse
+  MultiFamily
+  Land
+}
+
+enum LeadStatus {
+  New
+  Contacted
+  Showing
+  UnderContract
+  Closed
+  Lost
+}
+
+enum LeadTimeline {
+  ASAP
+  OneThreeMonths
+  ThreeSixMonths
+  SixPlusMonths
+}
