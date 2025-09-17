@@ -74,6 +74,8 @@ export function LeadListClient({ initialData }: { initialData: InitialData }) {
   const [data, setData] = React.useState(initialData);
   const [isDeleting, setIsDeleting] = React.useState(false);
   const [isNavigating, setIsNavigating] = React.useState(false);
+  const [isPageLoading, setIsPageLoading] = React.useState(false);
+  const [isSearching, setIsSearching] = React.useState(false);
   const [searchQuery, setSearchQuery] = React.useState('');
   const router = useRouter();
   const pathname = usePathname();
@@ -84,6 +86,8 @@ export function LeadListClient({ initialData }: { initialData: InitialData }) {
 
   React.useEffect(() => {
     setData(initialData);
+    setIsPageLoading(false);
+    setIsSearching(false);
   }, [initialData]);
 
 
@@ -94,8 +98,8 @@ export function LeadListClient({ initialData }: { initialData: InitialData }) {
   }, [pathname]);
   
   const handleSearch = useDebouncedCallback((term: string) => {
+    setIsSearching(true);
     const params = new URLSearchParams(searchParams);
-    // console.log(params);
     params.set('page', '1');
     if (term) {
       params.set('query', term);
@@ -103,10 +107,10 @@ export function LeadListClient({ initialData }: { initialData: InitialData }) {
       params.delete('query');
     }
     router.replace(`${pathname}?${params.toString()}`);
-    
   }, 300);
 
   const handleFilterChange = (key: string, value: string) => {
+    setIsSearching(true);
     const params = new URLSearchParams(searchParams);
     params.set('page', '1');
     if (value && value !== 'all') {
@@ -118,6 +122,7 @@ export function LeadListClient({ initialData }: { initialData: InitialData }) {
   };
 
   const handlePageChange = (newPage: number) => {
+    setIsPageLoading(true);
     const params = new URLSearchParams(searchParams);
     params.set('page', String(newPage));
     router.replace(`${pathname}?${params.toString()}`);
@@ -369,7 +374,34 @@ export function LeadListClient({ initialData }: { initialData: InitialData }) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.leads.length > 0 ? (
+            {(isPageLoading || isSearching) ? (
+              Array.from({ length: data.perPage }).map((_, index) => (
+                <TableRow key={index}>
+                  <TableCell className="font-medium">
+                    <div className="h-4 bg-muted animate-pulse rounded mb-2"></div>
+                    <div className="h-3 bg-muted animate-pulse rounded w-3/4"></div>
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell">
+                    <div className="h-4 bg-muted animate-pulse rounded w-20"></div>
+                  </TableCell>
+                  <TableCell className="hidden lg:table-cell">
+                    <div className="h-4 bg-muted animate-pulse rounded w-24"></div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="h-6 bg-muted animate-pulse rounded w-16"></div>
+                  </TableCell>
+                  <TableCell className="hidden lg:table-cell">
+                    <div className="h-4 bg-muted animate-pulse rounded w-20"></div>
+                  </TableCell>
+                  <TableCell className="hidden sm:table-cell">
+                    <div className="h-4 bg-muted animate-pulse rounded w-20"></div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="h-8 w-8 bg-muted animate-pulse rounded"></div>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : data.leads.length > 0 ? (
               data.leads.map((lead) => (
                 <TableRow key={lead.id}>
                   <TableCell className="font-medium">
@@ -480,9 +512,9 @@ export function LeadListClient({ initialData }: { initialData: InitialData }) {
                 variant="outline"
                 size="sm"
                 onClick={() => handlePageChange(data.page - 1)}
-                disabled={data.page <= 1}
+                disabled={data.page <= 1 || isPageLoading}
             >
-                <ChevronLeft className="h-4 w-4" />
+                {isPageLoading ? <Loader className="h-4 w-4 animate-spin" /> : <ChevronLeft className="h-4 w-4" />}
                 <span className="sr-only">Previous</span>
             </Button>
             <span className="text-sm font-medium">
@@ -492,9 +524,9 @@ export function LeadListClient({ initialData }: { initialData: InitialData }) {
                 variant="outline"
                 size="sm"
                 onClick={() => handlePageChange(data.page + 1)}
-                disabled={data.page >= totalPages}
+                disabled={data.page >= totalPages || isPageLoading}
             >
-                <ChevronRight className="h-4 w-4" />
+                {isPageLoading ? <Loader className="h-4 w-4 animate-spin" /> : <ChevronRight className="h-4 w-4" />}
                 <span className="sr-only">Next</span>
             </Button>
         </div>
